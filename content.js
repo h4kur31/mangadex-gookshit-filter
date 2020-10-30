@@ -6038,7 +6038,7 @@ const onDOMContentLoaded = () => {
       return;
     }
     if (gookshitIds.includes(id)) {
-      const parent = link.closest(".col-md-6.border-bottom") || link.closest(".list-group-item");
+      const parent = link.closest(".col-md-6.border-bottom") || link.closest(".list-group-item") || link.closest(".manga-entry");
       if (parent && parent.remove) {
         parent.remove();
       }
