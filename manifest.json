@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "mangadex-gookshit-filter",
+  "version": "1.0.0",
+
+  "description": "Hide gookshit from mangadex.",
+
+  "content_scripts": [
+    {
+      "matches": ["*://mangadex.org/*", "*://www.mangadex.org/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+
+  "permissions": ["*://mangadex.org/*", "*://www.mangadex.org/*"]
+}
