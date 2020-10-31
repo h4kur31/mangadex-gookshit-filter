@@ -6085,7 +6085,15 @@ let gookshitIds = [
   "49358",
   "54229",
   "12265",
-  "54002"
+  "54002",
+  "56983",
+  "56993",
+  "56984",
+  "56972",
+  "56973",
+  "56992",
+  "56994",
+  "56987"
 ];
 
 const getLocalStorage = () => {
@@ -6212,6 +6220,13 @@ const onDOMContentLoaded = () => {
       link.parentElement.insertBefore(hideBtn, link);
     }
   });
+};
+
+const update = async () => {
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const origin of blacklistOrigins) {
+    await new Promise((resolve) => updateIds(`${baseUrl}/${searchPathname}?lang_id=${origin}&tag_mode_exc=any&tag_mode_inc=all`, resolve));
+  }
 };
 
 const main = () => {
