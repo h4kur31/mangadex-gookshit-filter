@@ -6088,6 +6088,17 @@ let gookshitIds = [
   "54002"
 ];
 
+const getLocalStorage = () => {
+  let data = localStorage.getItem(localStorageKey);
+  try {
+    data = JSON.parse(data);
+  } catch (_) {
+    // ignore errors
+  }
+  return data;
+};
+const setLocalStorage = (data) => localStorage.setItem(localStorageKey, JSON.stringify(data));
+
 const updateIds = (url, callback) => {
   if (!Array.isArray(gookshitIds)) {
     gookshitIds = [];
@@ -6159,41 +6170,59 @@ const updateIds = (url, callback) => {
 };
 
 const onDOMContentLoaded = () => {
+  const style = document.createElement("style");
+  style.textContent = ".hideBtn{cursor: pointer;margin-right: 6px;}#content .hideBtn{margin-top: 3px;}.hideBtn:hover{color: #fff;}";
+  (document.head || document.body).appendChild(style);
+
   const links = Array.from(document.querySelectorAll("a[href^='/title/']"));
   links.forEach((link) => {
     const matches = link.href.match(/title\/(\d+)\//);
     if (!matches || matches.length < 2) {
       return;
     }
+
     const id = matches[1];
     if (!id || !id.length) {
       return;
     }
-    if (gookshitIds.includes(id)) {
-      const parent = link.closest(".col-md-6.border-bottom") || link.closest(".list-group-item") || link.closest(".manga-entry") || link.closest(".owl-item");
+
+    const parent = link.closest(".col-md-6.border-bottom") || link.closest(".list-group-item") || link.closest(".manga-entry") || link.closest(".owl-item");
+    const removeParent = () => {
       if (parent && parent.remove) {
         parent.remove();
       }
+    };
+
+    if (gookshitIds.includes(id)) {
+      removeParent();
+    } else if (link.textContent && link.textContent.length && link.classList.contains("manga_title")) {
+      const hideBtn = document.createElement("span");
+      hideBtn.classList.add("fas", "fa-times", "hideBtn");
+      hideBtn.addEventListener("click", () => {
+        let data = getLocalStorage();
+        if (!Array.isArray(data)) {
+          data = [];
+        }
+        data.push(id);
+
+        setLocalStorage(data);
+        removeParent();
+      });
+
+      link.parentElement.insertBefore(hideBtn, link);
     }
   });
 };
 
 const main = () => {
-  /* gookshitIds = localStorage.getItem(localStorageKey);
-  if (gookshitIds && gookshitIds.length) {
-    gookshitIds = JSON.parse(gookshitIds);
-  } else {
-    blacklistOrigins.forEach(async (originId) => {
-      await new Promise((resolve) => updateIds(`${baseUrl}/${searchPathname}?lang_id=${originId}&tag_mode_exc=any&tag_mode_inc=all`, resolve));
+  const localGookshitIds = getLocalStorage();
+  if (Array.isArray(localGookshitIds) && localGookshitIds.length) {
+    localGookshitIds.forEach((id) => {
+      if (!gookshitIds.includes(id)) {
+        gookshitIds.push(id);
+      }
     });
-  } */
-  /* 
-  const tmp = localStorage.getItem(localStorageKey);
-  if (tmp && tmp.length) {
-    gookshitIds = JSON.parse(tmp);
-  } else if (Array.isArray(gookshitIds) && gookshitIds.length) {
-    localStorage.setItem(localStorageKey, JSON.stringify(gookshitIds));
-  } */
+  }
 
   window.addEventListener("DOMContentLoaded", onDOMContentLoaded);
 };
